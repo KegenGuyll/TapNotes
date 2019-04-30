@@ -1,13 +1,15 @@
 import React from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Login from './components/login';
+import { Home } from './components/Home';
 
-const App = () => {
+const App = props => {
   return (
     <div className='App'>
       <Router>
-        <Route path='/' exact component={Login} />
+        <Switch>
+          <Route path='/' exact render={() => <Home user={props.user} />} />
+        </Switch>
       </Router>
     </div>
   );
