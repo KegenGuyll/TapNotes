@@ -1,0 +1,7 @@
+input {
+  color: white;
+}
+
+fieldset {
+  border-color: rgba(255, 255, 255, 0.47);
+}
