@@ -51,13 +51,14 @@ const Navigation = props => {
               fontFamily: 'Roboto',
               fontWeight: 600,
               fontSize: 'medium',
-              margin: 10
+              margin: 10,
+              width: '45vw'
             }}
             placeholder='Search your Notes'
           />
           <Avatar
             onClick={() => toggleAccount(false)}
-            style={{ margin: '10px 10px 10px 10vw', width: 30, height: 30 }}
+            style={{ margin: '10px 10px 10px 10px', width: 30, height: 30 }}
             alt={props.user.displayName}
             src={props.user.photoURL}
           />
