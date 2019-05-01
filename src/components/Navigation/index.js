@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Card,
   Grid,
@@ -22,10 +22,14 @@ import {
   Delete,
   Settings
 } from '@material-ui/icons';
+import { withRouter } from 'react-router-dom';
+import { CreateCategory } from '../Category/CreateCategory';
 
 const Navigation = props => {
   let [details, setDetails] = useState(false);
   let [account, setAccount] = useState(false);
+
+  const childRef = useRef();
 
   const toggleDetails = open => {
     setDetails((details = !open));
@@ -35,34 +39,49 @@ const Navigation = props => {
     setAccount((account = !open));
   };
 
+  const route = path => {
+    props.history.push(path);
+    toggleDetails(true);
+  };
+
   const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
   return (
-    <Grid container justify='center'>
-      <Card style={{ width: '85%', marginTop: '2vh' }} elevation={2}>
-        <Grid item container direction='row'>
-          <IconButton onClick={() => toggleDetails(false)}>
-            <Menu />
-          </IconButton>
-          <input
-            style={{
-              border: 'unset',
-              color: 'black',
-              outline: 'none',
-              fontFamily: 'Roboto',
-              fontWeight: 600,
-              fontSize: 'medium',
-              margin: 10
-            }}
-            placeholder='Search your Notes'
-          />
-          <Avatar
-            onClick={() => toggleAccount(false)}
-            style={{ margin: '10px 10px 10px 10vw', width: 30, height: 30 }}
-            alt={props.user.displayName}
-            src={props.user.photoURL}
-          />
-        </Grid>
-      </Card>
+    <Grid>
+      <Grid container justify='center' direction='row'>
+        {
+          <Card style={{ width: '85%', marginTop: '2vh' }} elevation={2}>
+            <Grid item container direction='row'>
+              <IconButton onClick={() => toggleDetails(false)}>
+                <Menu />
+              </IconButton>
+              <input
+                style={{
+                  border: 'unset',
+                  color: 'black',
+                  outline: 'none',
+                  fontFamily: 'Montserrat',
+                  fontWeight: 600,
+                  fontSize: 'medium',
+                  margin: 10,
+                  flexGrow: 1
+                }}
+                placeholder='Search your Notes'
+              />
+              <Avatar
+                onClick={() => toggleAccount(false)}
+                style={{
+                  margin: '10px 10px 10px 10px',
+                  width: 30,
+                  height: 30
+                }}
+                alt={props.user.displayName}
+                src={props.user.photoURL}
+              />
+            </Grid>
+          </Card>
+        }
+      </Grid>
+
       <SwipeableDrawer
         disableBackdropTransition={!iOS}
         disableDiscovery={iOS}
@@ -75,40 +94,40 @@ const Navigation = props => {
           <Typography style={{ padding: 20 }} variant='h6'>
             TapNotes
           </Typography>
-          <ListItem>
+          <ListItem button>
             <ListItemIcon>
               <Create />
             </ListItemIcon>
             <ListItemText>Notes</ListItemText>
           </ListItem>
-          <ListItem>
+          <ListItem button>
             <ListItemIcon>
               <NotificationsActiveOutlined />
             </ListItemIcon>
             <ListItemText>Reminders</ListItemText>
           </ListItem>
           <Divider />
-          <ListItem>
+          <ListItem onClick={() => childRef.current.activeCategory()} button>
             <ListItemIcon>
               <Add />
             </ListItemIcon>
             <ListItemText>Create new category</ListItemText>
           </ListItem>
           <Divider />
-          <ListItem>
+          <ListItem button>
             <ListItemIcon>
               <MoveToInbox />
             </ListItemIcon>
             <ListItemText>Archive</ListItemText>
           </ListItem>
-          <ListItem>
+          <ListItem button>
             <ListItemIcon>
               <Delete />
             </ListItemIcon>
             <ListItemText>Trash</ListItemText>
           </ListItem>
           <Divider />
-          <ListItem>
+          <ListItem button>
             <ListItemIcon>
               <Settings />
             </ListItemIcon>
@@ -155,9 +174,10 @@ const Navigation = props => {
           </ListItem>
         </List>
       </SwipeableDrawer>
+      <CreateCategory user={props.user} ref={childRef} />
       {props.children}
     </Grid>
   );
 };
 
-export default Navigation;
+export default withRouter(Navigation);
