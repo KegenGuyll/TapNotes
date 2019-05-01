@@ -11,7 +11,9 @@ import {
   ListItemText,
   Divider,
   Typography,
-  Button
+  Button,
+  InputBase,
+  Paper
 } from '@material-ui/core';
 import {
   Menu,
@@ -49,36 +51,46 @@ const Navigation = props => {
     <Grid>
       <Grid container justify='center' direction='row'>
         {
-          <Card style={{ width: '85%', marginTop: '2vh' }} elevation={2}>
+          <Paper
+            style={{
+              padding: '2px 4px',
+              display: 'flex',
+              alignItems: 'center',
+              width: '85%'
+            }}
+            elevation={2}
+          >
             <Grid item container direction='row'>
-              <IconButton onClick={() => toggleDetails(false)}>
+              <IconButton
+                aria-label='Menu'
+                style={{ padding: 10 }}
+                onClick={() => toggleDetails(false)}
+              >
                 <Menu />
               </IconButton>
-              <input
+              <InputBase
                 style={{
-                  border: 'unset',
-                  color: 'black',
-                  outline: 'none',
-                  fontFamily: 'Montserrat',
-                  fontWeight: 600,
-                  fontSize: 'medium',
-                  margin: 10,
-                  flexGrow: 1
+                  marginLeft: 8,
+                  flex: 1
                 }}
                 placeholder='Search your Notes'
               />
-              <Avatar
+              <IconButton
+                style={{ padding: 10 }}
                 onClick={() => toggleAccount(false)}
-                style={{
-                  margin: '10px 10px 10px 10px',
-                  width: 30,
-                  height: 30
-                }}
-                alt={props.user.displayName}
-                src={props.user.photoURL}
-              />
+                aria-label='Profile'
+              >
+                <Avatar
+                  style={{
+                    width: 30,
+                    height: 30
+                  }}
+                  alt={props.user.displayName}
+                  src={props.user.photoURL}
+                />
+              </IconButton>
             </Grid>
-          </Card>
+          </Paper>
         }
       </Grid>
 
