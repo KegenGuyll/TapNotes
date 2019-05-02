@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import {
-  Card,
   Grid,
   IconButton,
   Avatar,
@@ -24,7 +23,6 @@ import {
   Delete,
   Settings
 } from '@material-ui/icons';
-import { withRouter } from 'react-router-dom';
 import { CreateCategory } from '../Category/CreateCategory';
 
 const Navigation = props => {
@@ -39,11 +37,6 @@ const Navigation = props => {
 
   const toggleAccount = open => {
     setAccount((account = !open));
-  };
-
-  const route = path => {
-    props.history.push(path);
-    toggleDetails(true);
   };
 
   const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -192,4 +185,4 @@ const Navigation = props => {
   );
 };
 
-export default withRouter(Navigation);
+export default Navigation;
