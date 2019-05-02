@@ -78,11 +78,7 @@ export const CreateCategory = forwardRef((props, ref) => {
           }}
           position='static'
         >
-          <Toolbar
-            style={{
-              border: 'unset'
-            }}
-          >
+          <Toolbar>
             <IconButton onClick={handleClose}>
               <ArrowBack />
             </IconButton>
