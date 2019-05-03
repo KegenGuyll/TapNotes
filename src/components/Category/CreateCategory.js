@@ -15,6 +15,7 @@ import {
 import db from '../../firebaseConfig';
 import firebase from 'firebase';
 import { ArrowBack } from '@material-ui/icons';
+import { toast } from 'react-toastify';
 
 export const Transition = props => {
   return <Slide direction='up' {...props} />;
@@ -23,8 +24,9 @@ export const Transition = props => {
 export const CreateCategory = forwardRef((props, ref) => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
+  const user = props.user;
   const [description, setDescription] = useState('');
-  const docRef = db.collection('users').doc(props.user.uid);
+  const docRef = db.collection('users').doc(user.uid);
 
   useImperativeHandle(ref, () => ({
     activeCategory() {
@@ -45,15 +47,23 @@ export const CreateCategory = forwardRef((props, ref) => {
   };
 
   const addCategory = async () => {
-    if (title === '' || description === '') {
-      await console.log('you must have a title or/and description');
-      await handleClose();
+    if (title === '') {
+      await toast.error('A category must contain a proper title', {
+        position: 'bottom-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true
+      });
     } else {
       await docRef.update({
         categories: firebase.firestore.FieldValue.arrayUnion({
           title: title,
           description: description,
-          Notes: []
+          Notes: [],
+          owner: user.uid,
+          shared: []
         })
       });
       await setOpen(false);

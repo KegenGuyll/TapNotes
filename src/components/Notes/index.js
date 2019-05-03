@@ -33,7 +33,7 @@ export const Notes = forwardRef((props, ref) => {
     }
   }));
 
-  const handleClose = async () => {
+  const handleClose = () => {
     setOpen(false);
   };
 

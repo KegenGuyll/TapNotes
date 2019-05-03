@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import db from '../../firebaseConfig';
-import { Card, CardContent, Typography, IconButton } from '@material-ui/core';
-import { Close } from '@material-ui/icons';
-import LongPressable from 'react-longpressable';
+import {
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  Badge,
+  MenuItem,
+  Menu
+} from '@material-ui/core';
+import { MoreVert, Settings } from '@material-ui/icons';
 import { Notes } from '../Notes';
+import { toast } from 'react-toastify';
 
 export const Home = props => {
   const [categoryList, setCategoryList] = useState([]);
@@ -13,17 +21,16 @@ export const Home = props => {
   const docRef = db.collection('users').doc(user.uid);
 
   const handleDelete = index => {
-    categoryList.categories.splice(index, 1);
-    docRef.update({
-      categories: categoryList.categories
-    });
+    console.log(index);
+    // categoryList.categories.splice(index, 1);
+    // docRef.update({
+    //   categories: categoryList.categories
+    // });
   };
 
   const childRef = useRef();
 
-  const none = () => {};
-
-  const handleLongPress = async () => {
+  const handleRemove = async () => {
     await setToggleDelete(true);
     await setTimeout(() => {
       setToggleDelete(false);
@@ -59,17 +66,33 @@ export const Home = props => {
                       title: 'Welcome to TapNotes',
                       description: 'Thank your for downloading our app!!!'
                     }
-                  ]
+                  ],
+                  owner: `${user.uid}`,
+                  shared: []
                 }
               ]
             },
             onListener()
           );
-          console.log('Welcome new User');
+          toast.success(`Welcome to TapNotes ${user.displayName}`, {
+            position: 'bottom-center',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true
+          });
         }
       })
       .catch(error => {
-        console.log(error);
+        toast.error(error.Message, {
+          position: 'bottom-center',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        });
       });
 
     return function cleanup() {
@@ -82,34 +105,31 @@ export const Home = props => {
       {categoryList.categories &&
         categoryList.categories.map((card, index) => (
           <Card key={index} style={{ margin: 10 }}>
-            <CardContent>
-              {toggleDelete ? (
-                <IconButton
-                  color='secondary'
-                  onClick={() => handleDelete(index)}
-                  aria-haspopup='true'
-                  disableRipple={true}
-                  style={{ padding: 'unset', float: 'right', zIndex: 1000 }}
-                >
-                  <Close />
-                </IconButton>
-              ) : null}
-              <LongPressable
-                longPressTime={700}
-                onLongPress={handleLongPress}
-                onShortPress={() => passingData(card)}
-              >
-                <div>
-                  <Typography align='left' inline={true} variant='subheading'>
+            <IconButton
+              aria-haspopup='true'
+              disableRipple={true}
+              style={{ float: 'right' }}
+            >
+              <Settings />
+            </IconButton>
+            <CardContent onClick={() => passingData(card)}>
+              <div>
+                <Badge color='primary' badgeContent={card.Notes.length}>
+                  <Typography
+                    style={{ padding: '0 10px 0 0' }}
+                    align='left'
+                    inline={true}
+                    variant='subheading'
+                  >
                     {card.title}
                   </Typography>
-                </div>
-                <Typography variant='caption'>{card.description}</Typography>
-              </LongPressable>
+                </Badge>
+              </div>
+              <Typography variant='caption'>{card.description}</Typography>
             </CardContent>
-            <Notes ref={childRef} data={data} />
           </Card>
         ))}
+      <Notes ref={childRef} data={data} />
     </div>
   );
 };

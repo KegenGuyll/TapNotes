@@ -112,7 +112,13 @@ const Navigation = props => {
             <ListItemText>Reminders</ListItemText>
           </ListItem>
           <Divider />
-          <ListItem onClick={() => childRef.current.activeCategory()} button>
+          <ListItem
+            onClick={() => {
+              childRef.current.activeCategory();
+              toggleDetails(true);
+            }}
+            button
+          >
             <ListItemIcon>
               <Add />
             </ListItemIcon>
