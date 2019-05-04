@@ -1,23 +1,22 @@
-import React, { useState, useImperativeHandle, forwardRef } from 'react';
+import React, {
+  useState,
+  useImperativeHandle,
+  forwardRef,
+  useEffect
+} from 'react';
 import {
   Dialog,
   Slide,
-  Button,
-  TextField,
   Grid,
   DialogContent,
-  DialogActions,
-  Toolbar,
-  AppBar,
-  IconButton,
   Typography,
-  Paper,
   Card,
-  CardContent
+  CardContent,
+  IconButton
 } from '@material-ui/core';
 import db from '../../firebaseConfig';
-import firebase from 'firebase';
-import { ArrowBack, Add } from '@material-ui/icons';
+import { DialogNav } from '../Navigation/DialogNav';
+import { Close } from '@material-ui/icons';
 
 export const Transition = props => {
   return <Slide direction='up' {...props} />;
@@ -25,52 +24,59 @@ export const Transition = props => {
 
 export const Notes = forwardRef((props, ref) => {
   const [open, setOpen] = useState(false);
-  //const docRef = db.collection('users').doc(props.user.uid);
+  const [activeIndex, setActiveIndex] = useState(props.activeIndex);
+  const [data, setData] = useState([]);
+  const user = props.user;
+  const [categoryList, setCategoryList] = useState(props.categoryList);
+  const docRef = db.collection('users').doc(user.uid);
 
   useImperativeHandle(ref, () => ({
-    activeNotes() {
+    activeNotes(index) {
+      setActiveIndex(index);
       setOpen(true);
     }
   }));
+
+  useEffect(() => {
+    setData(props.data);
+  }, []);
 
   const handleClose = () => {
     setOpen(false);
   };
 
+  const handleDelete = async () => {
+    await props.handleDelete(props.index);
+    await handleClose();
+  };
+
+  const handleRemoveNote = async index => {
+    await categoryList.categories[activeIndex].Notes.splice(index, 1);
+    await docRef.update({
+      categories: categoryList.categories
+    });
+    await handleClose();
+  };
+
   return (
     <Grid container justify='center'>
       <Dialog fullScreen open={open} TransitionComponent={Transition}>
-        <Paper
-          elevation={0}
-          style={{
-            padding: '2px 4px',
-            display: 'flex',
-            alignItems: 'center',
-            width: '100%'
-          }}
-        >
-          <IconButton style={{ padding: 10 }} onClick={handleClose}>
-            <ArrowBack />
-          </IconButton>
-          <Typography
-            style={{
-              fontFamily: 'Montserrat',
-              fontWeight: 600,
-              textAlign: 'center',
-              flexGrow: 1
-            }}
-            variant='h6'
-          >
-            {props.data.title}
-          </Typography>
-          <IconButton disableRipple style={{ paddingRight: 28 }}>
-            <Add />
-          </IconButton>
-        </Paper>
+        <DialogNav
+          title={props.data.title}
+          notes={true}
+          handleClose={handleClose}
+          handleDelete={handleDelete}
+        />
         <DialogContent>
           {props.data.Notes &&
             props.data.Notes.map((note, index) => (
-              <Card key={index}>
+              <Card style={{ marginTop: '10px' }} key={index}>
+                <IconButton
+                  onClick={() => handleRemoveNote(index)}
+                  style={{ float: 'right' }}
+                >
+                  <Close />
+                </IconButton>
                 <CardContent>
                   <Typography>{note.title}</Typography>
                   <Typography variant='caption'>{note.description}</Typography>

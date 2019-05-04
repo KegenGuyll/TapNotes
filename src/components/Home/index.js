@@ -1,15 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import db from '../../firebaseConfig';
-import {
-  Card,
-  CardContent,
-  Typography,
-  IconButton,
-  Badge,
-  MenuItem,
-  Menu
-} from '@material-ui/core';
-import { MoreVert, Settings } from '@material-ui/icons';
+import { Card, CardContent, Typography, Badge } from '@material-ui/core';
 import { Notes } from '../Notes';
 import { toast } from 'react-toastify';
 
@@ -17,15 +8,15 @@ export const Home = props => {
   const [categoryList, setCategoryList] = useState([]);
   const [toggleDelete, setToggleDelete] = useState(false);
   const [data, setData] = useState('');
+  const [activeIndex, setActiveIndex] = useState('');
   const user = props.user;
   const docRef = db.collection('users').doc(user.uid);
 
   const handleDelete = index => {
-    console.log(index);
-    // categoryList.categories.splice(index, 1);
-    // docRef.update({
-    //   categories: categoryList.categories
-    // });
+    categoryList.categories.splice(index, 1);
+    docRef.update({
+      categories: categoryList.categories
+    });
   };
 
   const childRef = useRef();
@@ -43,9 +34,10 @@ export const Home = props => {
     });
   };
 
-  const passingData = async card => {
+  const passingData = async (card, index) => {
     await setData(card);
-    await childRef.current.activeNotes();
+    await setActiveIndex(index);
+    await childRef.current.activeNotes(index);
   };
 
   useEffect(() => {
@@ -60,11 +52,35 @@ export const Home = props => {
               categories: [
                 {
                   title: 'Help',
-                  description: 'Hold Category to delete them :)',
+                  description: 'Click Me to find out more :)',
                   Notes: [
                     {
                       title: 'Welcome to TapNotes',
                       description: 'Thank your for downloading our app!!!'
+                    },
+                    {
+                      title: 'Notes',
+                      description:
+                        'This is where all of your notes will be displayed'
+                    },
+                    {
+                      title: 'Delete Categories',
+                      description:
+                        'To delete categories you just press the 3 dots in the corner :)'
+                    },
+                    {
+                      title: 'Delete Notes',
+                      description: 'Just click the X attached to the card'
+                    },
+                    {
+                      title: 'Create Notes',
+                      description:
+                        'Select Notes in the menu, It is the first in the list'
+                    },
+                    {
+                      title: 'Create Categories',
+                      description:
+                        'Select "Create new category" in the menu, It is the third in the list'
                     }
                   ],
                   owner: `${user.uid}`,
@@ -104,15 +120,12 @@ export const Home = props => {
     <div>
       {categoryList.categories &&
         categoryList.categories.map((card, index) => (
-          <Card key={index} style={{ margin: 10 }}>
-            <IconButton
-              aria-haspopup='true'
-              disableRipple={true}
-              style={{ float: 'right' }}
-            >
-              <Settings />
-            </IconButton>
-            <CardContent onClick={() => passingData(card)}>
+          <Card
+            onClick={() => passingData(card, index)}
+            key={index}
+            style={{ margin: 10 }}
+          >
+            <CardContent>
               <div>
                 <Badge color='primary' badgeContent={card.Notes.length}>
                   <Typography
@@ -129,7 +142,16 @@ export const Home = props => {
             </CardContent>
           </Card>
         ))}
-      <Notes ref={childRef} data={data} />
+      {data !== '' ? (
+        <Notes
+          ref={childRef}
+          index={activeIndex}
+          categoryList={categoryList}
+          data={data}
+          user={user}
+          handleDelete={handleDelete}
+        />
+      ) : null}
     </div>
   );
 };

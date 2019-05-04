@@ -24,19 +24,22 @@ import {
   Settings
 } from '@material-ui/icons';
 import { CreateCategory } from '../Category/CreateCategory';
+import { CreateNote } from '../Notes/CreateNote';
 
 const Navigation = props => {
-  let [details, setDetails] = useState(false);
-  let [account, setAccount] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [profile, setProfile] = useState(false);
+  const [showCategory, setShowCategory] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
 
-  const childRef = useRef();
-
-  const toggleDetails = open => {
-    setDetails((details = !open));
+  const handleCategory = async () => {
+    await setMenu(false);
+    await setShowCategory(!showCategory);
   };
 
-  const toggleAccount = open => {
-    setAccount((account = !open));
+  const handleNotes = async () => {
+    await setMenu(false);
+    await setShowNotes(!showNotes);
   };
 
   const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -57,7 +60,7 @@ const Navigation = props => {
               <IconButton
                 aria-label='Menu'
                 style={{ padding: 10 }}
-                onClick={() => toggleDetails(false)}
+                onClick={() => setMenu(true)}
               >
                 <Menu />
               </IconButton>
@@ -70,7 +73,7 @@ const Navigation = props => {
               />
               <IconButton
                 style={{ padding: 10 }}
-                onClick={() => toggleAccount(false)}
+                onClick={() => setProfile(true)}
                 aria-label='Profile'
               >
                 <Avatar
@@ -91,15 +94,15 @@ const Navigation = props => {
         disableBackdropTransition={!iOS}
         disableDiscovery={iOS}
         anchor='left'
-        open={details}
-        onClose={() => toggleDetails(true)}
-        onOpen={() => toggleDetails(false)}
+        open={menu}
+        onClose={() => setMenu(false)}
+        onOpen={() => setMenu(true)}
       >
         <List>
           <Typography style={{ padding: 20 }} variant='h6'>
             TapNotes
           </Typography>
-          <ListItem button>
+          <ListItem onClick={handleNotes} button>
             <ListItemIcon>
               <Create />
             </ListItemIcon>
@@ -112,13 +115,7 @@ const Navigation = props => {
             <ListItemText>Reminders</ListItemText>
           </ListItem>
           <Divider />
-          <ListItem
-            onClick={() => {
-              childRef.current.activeCategory();
-              toggleDetails(true);
-            }}
-            button
-          >
+          <ListItem onClick={handleCategory} button>
             <ListItemIcon>
               <Add />
             </ListItemIcon>
@@ -150,9 +147,9 @@ const Navigation = props => {
         disableBackdropTransition={!iOS}
         disableDiscovery={iOS}
         anchor='bottom'
-        open={account}
-        onClose={() => toggleAccount(true)}
-        onOpen={() => toggleAccount(false)}
+        open={profile}
+        onClose={() => setProfile(false)}
+        onOpen={() => setProfile(true)}
       >
         <List>
           <ListItem>
@@ -185,7 +182,17 @@ const Navigation = props => {
           </ListItem>
         </List>
       </SwipeableDrawer>
-      <CreateCategory user={props.user} ref={childRef} />
+      {showCategory ? (
+        <CreateCategory
+          handleCategory={handleCategory}
+          open={true}
+          user={props.user}
+        />
+      ) : null}
+      {showNotes ? (
+        <CreateNote handleNotes={handleNotes} open={true} user={props.user} />
+      ) : null}
+
       {props.children}
     </Grid>
   );
