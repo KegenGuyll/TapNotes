@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import {
-  Card,
   Grid,
   IconButton,
   Avatar,
@@ -11,7 +10,9 @@ import {
   ListItemText,
   Divider,
   Typography,
-  Button
+  Button,
+  InputBase,
+  Paper
 } from '@material-ui/core';
 import {
   Menu,
@@ -22,26 +23,23 @@ import {
   Delete,
   Settings
 } from '@material-ui/icons';
-import { withRouter } from 'react-router-dom';
 import { CreateCategory } from '../Category/CreateCategory';
+import { CreateNote } from '../Notes/CreateNote';
 
 const Navigation = props => {
-  let [details, setDetails] = useState(false);
-  let [account, setAccount] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [profile, setProfile] = useState(false);
+  const [showCategory, setShowCategory] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
 
-  const childRef = useRef();
-
-  const toggleDetails = open => {
-    setDetails((details = !open));
+  const handleCategory = async () => {
+    await setMenu(false);
+    await setShowCategory(!showCategory);
   };
 
-  const toggleAccount = open => {
-    setAccount((account = !open));
-  };
-
-  const route = path => {
-    props.history.push(path);
-    toggleDetails(true);
+  const handleNotes = async () => {
+    await setMenu(false);
+    await setShowNotes(!showNotes);
   };
 
   const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -49,36 +47,46 @@ const Navigation = props => {
     <Grid>
       <Grid container justify='center' direction='row'>
         {
-          <Card style={{ width: '85%', marginTop: '2vh' }} elevation={2}>
+          <Paper
+            style={{
+              padding: '2px 4px',
+              display: 'flex',
+              alignItems: 'center',
+              width: '85%'
+            }}
+            elevation={2}
+          >
             <Grid item container direction='row'>
-              <IconButton onClick={() => toggleDetails(false)}>
+              <IconButton
+                aria-label='Menu'
+                style={{ padding: 10 }}
+                onClick={() => setMenu(true)}
+              >
                 <Menu />
               </IconButton>
-              <input
+              <InputBase
                 style={{
-                  border: 'unset',
-                  color: 'black',
-                  outline: 'none',
-                  fontFamily: 'Montserrat',
-                  fontWeight: 600,
-                  fontSize: 'medium',
-                  margin: 10,
-                  flexGrow: 1
+                  marginLeft: 8,
+                  flex: 1
                 }}
                 placeholder='Search your Notes'
               />
-              <Avatar
-                onClick={() => toggleAccount(false)}
-                style={{
-                  margin: '10px 10px 10px 10px',
-                  width: 30,
-                  height: 30
-                }}
-                alt={props.user.displayName}
-                src={props.user.photoURL}
-              />
+              <IconButton
+                style={{ padding: 10 }}
+                onClick={() => setProfile(true)}
+                aria-label='Profile'
+              >
+                <Avatar
+                  style={{
+                    width: 30,
+                    height: 30
+                  }}
+                  alt={props.user.displayName}
+                  src={props.user.photoURL}
+                />
+              </IconButton>
             </Grid>
-          </Card>
+          </Paper>
         }
       </Grid>
 
@@ -86,15 +94,15 @@ const Navigation = props => {
         disableBackdropTransition={!iOS}
         disableDiscovery={iOS}
         anchor='left'
-        open={details}
-        onClose={() => toggleDetails(true)}
-        onOpen={() => toggleDetails(false)}
+        open={menu}
+        onClose={() => setMenu(false)}
+        onOpen={() => setMenu(true)}
       >
         <List>
           <Typography style={{ padding: 20 }} variant='h6'>
             TapNotes
           </Typography>
-          <ListItem button>
+          <ListItem onClick={handleNotes} button>
             <ListItemIcon>
               <Create />
             </ListItemIcon>
@@ -107,7 +115,7 @@ const Navigation = props => {
             <ListItemText>Reminders</ListItemText>
           </ListItem>
           <Divider />
-          <ListItem onClick={() => childRef.current.activeCategory()} button>
+          <ListItem onClick={handleCategory} button>
             <ListItemIcon>
               <Add />
             </ListItemIcon>
@@ -139,9 +147,9 @@ const Navigation = props => {
         disableBackdropTransition={!iOS}
         disableDiscovery={iOS}
         anchor='bottom'
-        open={account}
-        onClose={() => toggleAccount(true)}
-        onOpen={() => toggleAccount(false)}
+        open={profile}
+        onClose={() => setProfile(false)}
+        onOpen={() => setProfile(true)}
       >
         <List>
           <ListItem>
@@ -174,10 +182,20 @@ const Navigation = props => {
           </ListItem>
         </List>
       </SwipeableDrawer>
-      <CreateCategory user={props.user} ref={childRef} />
+      {showCategory ? (
+        <CreateCategory
+          handleCategory={handleCategory}
+          open={true}
+          user={props.user}
+        />
+      ) : null}
+      {showNotes ? (
+        <CreateNote handleNotes={handleNotes} open={true} user={props.user} />
+      ) : null}
+
       {props.children}
     </Grid>
   );
 };
 
-export default withRouter(Navigation);
+export default Navigation;

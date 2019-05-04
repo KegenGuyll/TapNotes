@@ -46,27 +46,27 @@ const styles = theme => ({
 });
 
 const Login = props => {
-  let [email, setEmail] = useState('');
-  let [password, setPassword] = useState('');
-  let [showPassword, setShowPassword] = useState(false);
-  let [switchPage, setSwitchPage] = useState(false);
-  let [error, setError] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [switchPage, setSwitchPage] = useState(false);
+  const [error, setError] = useState('');
   const Googleprovider = new firebase.auth.GoogleAuthProvider();
 
   const handleEmail = event => {
-    setEmail((email = event.target.value));
+    setEmail(event.target.value);
   };
 
   const handlePassword = event => {
-    setPassword((password = event.target.value));
+    setPassword(event.target.value);
   };
 
   const ShowPassword = () => {
-    setShowPassword((showPassword = !showPassword));
+    setShowPassword(!showPassword);
   };
 
   const page = () => {
-    setSwitchPage((switchPage = !switchPage));
+    setSwitchPage(!switchPage);
   };
 
   const handleSignIn = provider => {
@@ -90,7 +90,7 @@ const Login = props => {
         await auth.createUserWithEmailAndPassword(email, password);
       }
     } catch (err) {
-      setError((error = err.message));
+      setError(err.message);
       toast.error(error, {
         position: 'bottom-center',
         autoClose: 5000,
