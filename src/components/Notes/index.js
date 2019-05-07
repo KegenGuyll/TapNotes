@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useImperativeHandle,
-  forwardRef,
-  useEffect
-} from 'react';
+import React, { useState, useImperativeHandle, forwardRef } from 'react';
 import {
   Dialog,
   Slide,
@@ -12,7 +7,8 @@ import {
   Typography,
   Card,
   CardContent,
-  IconButton
+  IconButton,
+  Zoom
 } from '@material-ui/core';
 import db from '../../firebaseConfig';
 import { DialogNav } from '../Navigation/DialogNav';
@@ -25,7 +21,6 @@ export const Transition = props => {
 export const Notes = forwardRef((props, ref) => {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(props.activeIndex);
-  const [data, setData] = useState([]);
   const user = props.user;
   const [categoryList, setCategoryList] = useState(props.categoryList);
   const docRef = db.collection('users').doc(user.uid);
@@ -36,10 +31,6 @@ export const Notes = forwardRef((props, ref) => {
       setOpen(true);
     }
   }));
-
-  useEffect(() => {
-    setData(props.data);
-  }, []);
 
   const handleClose = () => {
     setOpen(false);
@@ -70,18 +61,22 @@ export const Notes = forwardRef((props, ref) => {
         <DialogContent>
           {props.data.Notes &&
             props.data.Notes.map((note, index) => (
-              <Card style={{ marginTop: '10px' }} key={index}>
-                <IconButton
-                  onClick={() => handleRemoveNote(index)}
-                  style={{ float: 'right' }}
-                >
-                  <Close />
-                </IconButton>
-                <CardContent>
-                  <Typography>{note.title}</Typography>
-                  <Typography variant='caption'>{note.description}</Typography>
-                </CardContent>
-              </Card>
+              <Zoom key={index} style={{ transitionDelay: '250ms' }} in={true}>
+                <Card style={{ marginTop: '10px' }}>
+                  <IconButton
+                    onClick={() => handleRemoveNote(index)}
+                    style={{ float: 'right' }}
+                  >
+                    <Close />
+                  </IconButton>
+                  <CardContent>
+                    <Typography>{note.title}</Typography>
+                    <Typography variant='caption'>
+                      {note.description}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Zoom>
             ))}
         </DialogContent>
       </Dialog>

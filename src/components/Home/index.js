@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import db from '../../firebaseConfig';
-import { Card, CardContent, Typography, Badge } from '@material-ui/core';
+import { Card, CardContent, Typography, Badge, Slide } from '@material-ui/core';
 import { Notes } from '../Notes';
 import { toast } from 'react-toastify';
+import help from '../../Common/help.json';
 
 export const Home = props => {
   const [categoryList, setCategoryList] = useState([]);
-  const [toggleDelete, setToggleDelete] = useState(false);
   const [data, setData] = useState('');
   const [activeIndex, setActiveIndex] = useState('');
   const user = props.user;
@@ -20,13 +20,6 @@ export const Home = props => {
   };
 
   const childRef = useRef();
-
-  const handleRemove = async () => {
-    await setToggleDelete(true);
-    await setTimeout(() => {
-      setToggleDelete(false);
-    }, 3000);
-  };
 
   const onListener = () => {
     docRef.onSnapshot(doc => {
@@ -49,44 +42,7 @@ export const Home = props => {
         } else {
           docRef.set(
             {
-              categories: [
-                {
-                  title: 'Help',
-                  description: 'Click Me to find out more :)',
-                  Notes: [
-                    {
-                      title: 'Welcome to TapNotes',
-                      description: 'Thank your for downloading our app!!!'
-                    },
-                    {
-                      title: 'Notes',
-                      description:
-                        'This is where all of your notes will be displayed'
-                    },
-                    {
-                      title: 'Delete Categories',
-                      description:
-                        'To delete categories you just press the 3 dots in the corner :)'
-                    },
-                    {
-                      title: 'Delete Notes',
-                      description: 'Just click the X attached to the card'
-                    },
-                    {
-                      title: 'Create Notes',
-                      description:
-                        'Select Notes in the menu, It is the first in the list'
-                    },
-                    {
-                      title: 'Create Categories',
-                      description:
-                        'Select "Create new category" in the menu, It is the third in the list'
-                    }
-                  ],
-                  owner: `${user.uid}`,
-                  shared: []
-                }
-              ]
+              categories: [help]
             },
             onListener()
           );
@@ -120,27 +76,34 @@ export const Home = props => {
     <div>
       {categoryList.categories &&
         categoryList.categories.map((card, index) => (
-          <Card
-            onClick={() => passingData(card, index)}
+          <Slide
             key={index}
-            style={{ margin: 10 }}
+            direction={index & 1 ? 'right' : 'left'}
+            in={true}
+            mountOnEnter
+            unmountOnExit
           >
-            <CardContent>
-              <div>
-                <Badge color='primary' badgeContent={card.Notes.length}>
-                  <Typography
-                    style={{ padding: '0 10px 0 0' }}
-                    align='left'
-                    inline={true}
-                    variant='subheading'
-                  >
-                    {card.title}
-                  </Typography>
-                </Badge>
-              </div>
-              <Typography variant='caption'>{card.description}</Typography>
-            </CardContent>
-          </Card>
+            <Card
+              onClick={() => passingData(card, index)}
+              style={{ margin: 10 }}
+            >
+              <CardContent>
+                <div>
+                  <Badge color='primary' badgeContent={card.Notes.length}>
+                    <Typography
+                      style={{ padding: '0 10px 0 0' }}
+                      align='left'
+                      inline={true}
+                      variant='subheading'
+                    >
+                      {card.title}
+                    </Typography>
+                  </Badge>
+                </div>
+                <Typography variant='caption'>{card.description}</Typography>
+              </CardContent>
+            </Card>
+          </Slide>
         ))}
       {data !== '' ? (
         <Notes

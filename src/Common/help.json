@@ -1,0 +1,31 @@
+{
+  "title": "Help",
+  "description": "Click Me to find out more :)",
+  "Notes": [
+    {
+      "title": "Welcome to TapNotes",
+      "description": "Thank your for downloading our app!!!"
+    },
+    {
+      "title": "Notes",
+      "description": "This is where all of your notes will be displayed"
+    },
+    {
+      "title": "Delete Categories",
+      "description": "To delete categories you just press the 3 dots in the corner :)"
+    },
+    {
+      "title": "Delete Notes",
+      "description": "Just click the X attached to the card"
+    },
+    {
+      "title": "Create Notes",
+      "description": "Select Notes in the menu, It is the first in the list"
+    },
+    {
+      "title": "Create Categories",
+      "description": "Select 'Create new category' in the menu, It is the third in the list"
+    }
+  ],
+  "shared": []
+}
