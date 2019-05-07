@@ -9,7 +9,9 @@ import {
   MenuItem,
   Select,
   FormControl,
-  InputLabel
+  InputLabel,
+  InputBase,
+  FilledInput
 } from '@material-ui/core';
 import { DialogNav } from '../Navigation/DialogNav';
 import db from '../../firebaseConfig';
@@ -92,44 +94,55 @@ export const CreateNote = props => {
       <DialogNav title={'Create Note'} handleClose={handleClose} />
       <div style={{ marginBottom: 35 }} />
       <DialogContent>
-        <TextField
-          label='Title'
+        <InputBase
+          style={{
+            flex: 1,
+            fontSize: '1.5em',
+            fontFamily: 'Montserrat',
+            fontWeight: 600
+          }}
           value={title}
           onChange={handleTitle}
           fullWidth
+          placeholder='Title'
         />
-        <TextField
-          label='Description'
+        <InputBase
+          style={{
+            flex: 1,
+            fontSize: '1em',
+            fontFamily: 'Montserrat',
+            fontWeight: 600
+          }}
           value={description}
           onChange={handleDescription}
           fullWidth
+          placeholder='Note'
+          multiline
         />
         <div style={{ height: '2vh' }} />
+      </DialogContent>
+      <DialogActions>
         <FormControl fullWidth>
           <InputLabel htmlFor='demo-controlled-open-select'>
-            Select a Category to add the note
+            Category
           </InputLabel>
           <Select
-            open={openSelect}
-            onClose={handleCloseSelect}
-            onOpen={handleOpenSelect}
+            native
             value={selectCategory}
             onChange={handleChange}
-            inputProps={{
-              name: 'Category',
-              id: 'demo-controlled-open-select'
-            }}
+            input={
+              <FilledInput name='Category' id='demo-controlled-open-select' />
+            }
           >
+            <option value='' />
             {data.categories &&
               data.categories.map((value, index) => (
-                <MenuItem key={index} value={index}>
+                <option key={index} value={index}>
                   {value.title}
-                </MenuItem>
+                </option>
               ))}
           </Select>
         </FormControl>
-      </DialogContent>
-      <DialogActions>
         <Button
           disabled={selectCategory === '' || title === '' || description === ''}
           onClick={createNote}
