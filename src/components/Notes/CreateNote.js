@@ -3,10 +3,8 @@ import {
   Dialog,
   Slide,
   Button,
-  TextField,
   DialogContent,
   DialogActions,
-  MenuItem,
   Select,
   FormControl,
   InputLabel,
@@ -23,10 +21,13 @@ export const Transition = props => {
 export const CreateNote = props => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
-  const [selectCategory, setSelectCategory] = useState('');
-  const [openSelect, setOpenSelect] = useState(false);
+  const [selectCategory, setSelectCategory] = useState(
+    props.defalutValue || props.defalutValue === 0 ? props.defalutValue : ''
+  );
   const [data, setData] = useState([]);
-  const [activeIndex, setActiveIndex] = useState('');
+  const [activeIndex, setActiveIndex] = useState(
+    props.defalutValue || props.defalutValue === 0 ? props.defalutValue : ''
+  );
   const [description, setDescription] = useState('');
   const user = props.user;
   const docRef = db.collection('users').doc(user.uid);
@@ -42,9 +43,17 @@ export const CreateNote = props => {
     });
   };
 
+  const unsubscribe = () => {
+    docRef.onSnapshot(() => {});
+  };
+
   useEffect(() => {
     setOpen(props.open);
     onListener();
+
+    return function cleanup() {
+      unsubscribe();
+    };
   }, []);
 
   const handleClose = async () => {
@@ -52,14 +61,6 @@ export const CreateNote = props => {
     await setTimeout(() => {
       props.handleNotes();
     }, 250);
-  };
-
-  const handleCloseSelect = () => {
-    setOpenSelect(false);
-  };
-
-  const handleOpenSelect = () => {
-    setOpenSelect(true);
   };
 
   const handleTitle = event => {

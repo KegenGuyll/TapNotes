@@ -27,6 +27,10 @@ export const Home = props => {
     });
   };
 
+  const unsubscribe = () => {
+    docRef.onSnapshot(() => {});
+  };
+
   const passingData = async (card, index) => {
     await setData(card);
     await setActiveIndex(index);
@@ -68,7 +72,7 @@ export const Home = props => {
       });
 
     return function cleanup() {
-      console.log('unmount');
+      unsubscribe();
     };
   }, []);
 
