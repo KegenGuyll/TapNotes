@@ -4,6 +4,7 @@ import {
   Slide,
   Button,
   TextField,
+  InputBase,
   DialogContent,
   DialogActions
 } from '@material-ui/core';
@@ -79,18 +80,29 @@ export const CreateCategory = props => {
       <DialogNav title={'Create a category'} handleClose={handleClose} />
       <div style={{ marginBottom: 35 }} />
       <DialogContent>
-        <TextField
-          label='Title'
+        <InputBase
+          style={{
+            flex: 1,
+            fontSize: '1.5em',
+            fontFamily: 'Montserrat',
+            fontWeight: 600
+          }}
           value={title}
           onChange={handleTitle}
           fullWidth
+          placeholder='Title'
         />
-        <div style={{ height: '2vh' }} />
-        <TextField
-          label='Description'
+        <InputBase
+          style={{
+            flex: 1,
+            fontSize: '1em',
+            fontFamily: 'Montserrat',
+            fontWeight: 600
+          }}
           value={description}
           onChange={handleDescription}
           fullWidth
+          placeholder='Description'
           multiline
         />
       </DialogContent>

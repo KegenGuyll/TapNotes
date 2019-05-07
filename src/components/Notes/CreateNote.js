@@ -3,13 +3,13 @@ import {
   Dialog,
   Slide,
   Button,
-  TextField,
   DialogContent,
   DialogActions,
-  MenuItem,
   Select,
   FormControl,
-  InputLabel
+  InputLabel,
+  InputBase,
+  FilledInput
 } from '@material-ui/core';
 import { DialogNav } from '../Navigation/DialogNav';
 import db from '../../firebaseConfig';
@@ -21,10 +21,13 @@ export const Transition = props => {
 export const CreateNote = props => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
-  const [selectCategory, setSelectCategory] = useState('');
-  const [openSelect, setOpenSelect] = useState(false);
+  const [selectCategory, setSelectCategory] = useState(
+    props.defalutValue || props.defalutValue === 0 ? props.defalutValue : ''
+  );
   const [data, setData] = useState([]);
-  const [activeIndex, setActiveIndex] = useState('');
+  const [activeIndex, setActiveIndex] = useState(
+    props.defalutValue || props.defalutValue === 0 ? props.defalutValue : ''
+  );
   const [description, setDescription] = useState('');
   const user = props.user;
   const docRef = db.collection('users').doc(user.uid);
@@ -40,9 +43,17 @@ export const CreateNote = props => {
     });
   };
 
+  const unsubscribe = () => {
+    docRef.onSnapshot(() => {});
+  };
+
   useEffect(() => {
     setOpen(props.open);
     onListener();
+
+    return function cleanup() {
+      unsubscribe();
+    };
   }, []);
 
   const handleClose = async () => {
@@ -50,14 +61,6 @@ export const CreateNote = props => {
     await setTimeout(() => {
       props.handleNotes();
     }, 250);
-  };
-
-  const handleCloseSelect = () => {
-    setOpenSelect(false);
-  };
-
-  const handleOpenSelect = () => {
-    setOpenSelect(true);
   };
 
   const handleTitle = event => {
@@ -92,44 +95,55 @@ export const CreateNote = props => {
       <DialogNav title={'Create Note'} handleClose={handleClose} />
       <div style={{ marginBottom: 35 }} />
       <DialogContent>
-        <TextField
-          label='Title'
+        <InputBase
+          style={{
+            flex: 1,
+            fontSize: '1.5em',
+            fontFamily: 'Montserrat',
+            fontWeight: 600
+          }}
           value={title}
           onChange={handleTitle}
           fullWidth
+          placeholder='Title'
         />
-        <TextField
-          label='Description'
+        <InputBase
+          style={{
+            flex: 1,
+            fontSize: '1em',
+            fontFamily: 'Montserrat',
+            fontWeight: 600
+          }}
           value={description}
           onChange={handleDescription}
           fullWidth
+          placeholder='Note'
+          multiline
         />
         <div style={{ height: '2vh' }} />
+      </DialogContent>
+      <DialogActions>
         <FormControl fullWidth>
           <InputLabel htmlFor='demo-controlled-open-select'>
-            Select a Category to add the note
+            Category
           </InputLabel>
           <Select
-            open={openSelect}
-            onClose={handleCloseSelect}
-            onOpen={handleOpenSelect}
+            native
             value={selectCategory}
             onChange={handleChange}
-            inputProps={{
-              name: 'Category',
-              id: 'demo-controlled-open-select'
-            }}
+            input={
+              <FilledInput name='Category' id='demo-controlled-open-select' />
+            }
           >
+            <option value='' />
             {data.categories &&
               data.categories.map((value, index) => (
-                <MenuItem key={index} value={index}>
+                <option key={index} value={index}>
                   {value.title}
-                </MenuItem>
+                </option>
               ))}
           </Select>
         </FormControl>
-      </DialogContent>
-      <DialogActions>
         <Button
           disabled={selectCategory === '' || title === '' || description === ''}
           onClick={createNote}

@@ -67,7 +67,14 @@ export const DialogNav = props => {
               }
             }}
           >
-            <MenuItem>Add Note</MenuItem>
+            <MenuItem
+              onClick={() => {
+                props.handleAddNote();
+                setAnchorEl(null);
+              }}
+            >
+              Add Note
+            </MenuItem>
             <MenuItem>Rename</MenuItem>
             <MenuItem>Archive</MenuItem>
             <MenuItem onClick={props.handleDelete}>Delete</MenuItem>
