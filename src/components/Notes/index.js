@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useImperativeHandle,
-  forwardRef,
-  useEffect
-} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   Slide,
@@ -19,27 +14,20 @@ import db from '../../firebaseConfig';
 import { DialogNav } from '../Navigation/DialogNav';
 import { Close } from '@material-ui/icons';
 import { CreateNote } from './CreateNote';
-import { toast } from 'react-toastify';
 
 export const Transition = props => {
   return <Slide direction='up' {...props} />;
 };
 
-export const Notes = forwardRef((props, ref) => {
+export const Notes = props => {
   const [open, setOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState('');
+  const [activeIndex, setActiveIndex] = useState(props.index);
   const [addNote, setAddNote] = useState(false);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(props.data);
+  const [content, setContent] = useState(false);
   const user = props.user;
   const [categoryList, setCategoryList] = useState(props.categoryList);
   const docRef = db.collection('users').doc(user.uid);
-
-  useImperativeHandle(ref, () => ({
-    activeNotes(index) {
-      setActiveIndex(index);
-      setOpen(true);
-    }
-  }));
 
   useEffect(() => {
     onListener();
@@ -48,30 +36,25 @@ export const Notes = forwardRef((props, ref) => {
     };
   }, []);
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleClose = async () => {
+    await setOpen(false);
+    await setTimeout(() => {
+      props.close();
+    }, 250);
   };
 
-  const onListener = () => {
-    docRef.onSnapshot(doc => {
+  const onListener = async () => {
+    await docRef.onSnapshot(doc => {
       setData(doc.data());
     });
+    await setContent(true);
   };
 
   const unsubscribe = docRef.onSnapshot(() => {});
 
   const handleDelete = async () => {
-    //await setData(null);
-    // await props.handleDelete(props.index);
-    //await handleClose();
-    toast.error('This feature is a WIP, Sorry :(', {
-      position: 'bottom-center',
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true
-    });
+    await props.handleDelete(props.index);
+    await handleClose();
   };
 
   const handleAddNote = async () => {
@@ -88,17 +71,17 @@ export const Notes = forwardRef((props, ref) => {
 
   return (
     <Grid container justify='center'>
-      <Dialog fullScreen open={open} TransitionComponent={Transition}>
+      <Dialog fullScreen open={true} TransitionComponent={Transition}>
         <DialogNav
           title={props.data.title}
           notes={true}
-          handleClose={handleClose}
+          handleClose={props.close}
           handleDelete={handleDelete}
-          handleAddNote={handleAddNote}
+          handleAddNote={handleClose}
         />
         <DialogContent>
-          {data
-            ? data.categories[activeIndex].Notes.map((note, index) => (
+          {categoryList.categories[activeIndex]
+            ? categoryList.categories[activeIndex].Notes.map((note, index) => (
                 <Zoom
                   key={index}
                   style={{ transitionDelay: '250ms' }}
@@ -133,4 +116,4 @@ export const Notes = forwardRef((props, ref) => {
       ) : null}
     </Grid>
   );
-});
+};
