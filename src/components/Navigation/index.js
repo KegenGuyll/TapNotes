@@ -12,7 +12,8 @@ import {
   Typography,
   Button,
   InputBase,
-  Paper
+  Paper,
+  Drawer
 } from '@material-ui/core';
 import {
   Menu,
@@ -21,7 +22,11 @@ import {
   Add,
   MoveToInbox,
   Delete,
-  Settings
+  Settings,
+  CheckBoxOutlined,
+  Brush,
+  Mic,
+  Image
 } from '@material-ui/icons';
 import { CreateCategory } from '../Category/CreateCategory';
 import { CreateNote } from '../Notes/CreateNote';
@@ -143,14 +148,7 @@ const Navigation = props => {
           </ListItem>
         </List>
       </SwipeableDrawer>
-      <SwipeableDrawer
-        disableBackdropTransition={!iOS}
-        disableDiscovery={iOS}
-        anchor='bottom'
-        open={profile}
-        onClose={() => setProfile(false)}
-        onOpen={() => setProfile(true)}
-      >
+      <Drawer anchor='bottom' open={profile} onClose={() => setProfile(false)}>
         <List>
           <ListItem>
             <ListItemText style={{ textAlign: 'center' }}>
@@ -181,7 +179,7 @@ const Navigation = props => {
             </ListItemText>
           </ListItem>
         </List>
-      </SwipeableDrawer>
+      </Drawer>
       {showCategory ? (
         <CreateCategory
           handleCategory={handleCategory}
@@ -194,6 +192,59 @@ const Navigation = props => {
       ) : null}
 
       {props.children}
+      <Paper
+        elevation={0}
+        style={{
+          padding: '2px 4px',
+          display: 'flex',
+          alignItems: 'center',
+          width: '100%',
+          height: '5vh',
+          bottom: 0,
+          position: 'absolute'
+        }}
+      >
+        <Grid container spacing={0}>
+          <Grid item xs={12}>
+            <Grid alignItems='baseline' container>
+              <Grid item>
+                <Typography
+                  onClick={handleNotes}
+                  variant='caption'
+                  style={{
+                    marginLeft: 8,
+                    flex: 1,
+                    fontSize: '1rem',
+                    paddingRight: 95
+                  }}
+                >
+                  Take a Note...
+                </Typography>
+              </Grid>
+              <Grid item>
+                <IconButton>
+                  <CheckBoxOutlined />
+                </IconButton>
+              </Grid>
+              <Grid item>
+                <IconButton>
+                  <Brush />
+                </IconButton>
+              </Grid>
+              <Grid item>
+                <IconButton>
+                  <Mic />
+                </IconButton>
+              </Grid>
+              <Grid item>
+                <IconButton>
+                  <Image />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Paper>
     </Grid>
   );
 };

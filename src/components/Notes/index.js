@@ -77,7 +77,7 @@ export const Notes = props => {
           notes={true}
           handleClose={props.close}
           handleDelete={handleDelete}
-          handleAddNote={handleClose}
+          handleAddNote={handleAddNote}
         />
         <DialogContent>
           {categoryList.categories[activeIndex]

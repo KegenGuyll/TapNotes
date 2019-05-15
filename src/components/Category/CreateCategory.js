@@ -25,9 +25,7 @@ export const CreateCategory = props => {
   useEffect(() => {
     setOpen(props.open);
 
-    return function cleanup() {
-      console.log('unmonut');
-    };
+    return function cleanup() {};
   }, []);
 
   const handleClose = async () => {

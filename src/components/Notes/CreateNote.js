@@ -19,7 +19,7 @@ export const Transition = props => {
 };
 
 export const CreateNote = props => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [title, setTitle] = useState('');
   const [selectCategory, setSelectCategory] = useState(
     props.defalutValue || props.defalutValue === 0 ? props.defalutValue : ''
@@ -53,6 +53,7 @@ export const CreateNote = props => {
 
     return function cleanup() {
       unsubscribe();
+      console.log('unmount');
     };
   }, []);
 

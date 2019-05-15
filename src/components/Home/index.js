@@ -102,11 +102,14 @@ export const Home = props => {
               style={{ margin: 10 }}
             >
               <CardContent>
-                <Chip
-                  style={{ float: 'right' }}
-                  label={`${card.Notes.length} Notes`}
-                  color='primary'
-                />
+                {card.Notes.length > 0 ? (
+                  <Chip
+                    style={{ float: 'right' }}
+                    label={`${card.Notes.length} Notes`}
+                    color='primary'
+                  />
+                ) : null}
+
                 <div>
                   <Typography
                     style={{ padding: '0 10px 0 0' }}
