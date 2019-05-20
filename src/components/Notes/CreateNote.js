@@ -156,7 +156,7 @@ export const CreateNote = props => {
           variant='outlined'
           color='primary'
         >
-          Create
+          Save
         </Button>
       </DialogActions>
     </Dialog>
