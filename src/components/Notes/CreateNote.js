@@ -51,6 +51,11 @@ export const CreateNote = props => {
     setOpen(props.open);
     onListener();
 
+    if (props.note) {
+      setTitle(props.note.title);
+      setDescription(props.note.description);
+    }
+
     return function cleanup() {
       unsubscribe();
       console.log('unmount');

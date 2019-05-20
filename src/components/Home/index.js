@@ -1,13 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import db from '../../firebaseConfig';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Badge,
-  Slide,
-  Chip
-} from '@material-ui/core';
+import { Card, CardContent, Typography, Slide, Chip } from '@material-ui/core';
 import { Notes } from '../Notes';
 import { toast } from 'react-toastify';
 import help from '../../Common/help.json';
@@ -102,13 +95,13 @@ export const Home = props => {
               style={{ margin: 10 }}
             >
               <CardContent>
-                {card.Notes.length > 0 ? (
+                {card.Notes.length > 0 && (
                   <Chip
                     style={{ float: 'right' }}
                     label={`${card.Notes.length} Notes`}
                     color='primary'
                   />
-                ) : null}
+                )}
 
                 <div>
                   <Typography
