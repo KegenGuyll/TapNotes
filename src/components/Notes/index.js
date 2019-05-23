@@ -14,6 +14,7 @@ import db from '../../firebaseConfig';
 import { DialogNav } from '../Navigation/DialogNav';
 import { Close, Create } from '@material-ui/icons';
 import { CreateNote } from './CreateNote';
+import { UpdateNote } from './UpdateNote';
 
 export const Transition = props => {
   return <Slide direction='up' {...props} />;
@@ -22,6 +23,7 @@ export const Transition = props => {
 export const Notes = props => {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(props.index);
+  const [noteIndex, setNoteIndex] = useState('');
   const [addNote, setAddNote] = useState(false);
   const [data, setData] = useState(null);
   const [viewNote, setViewNote] = useState(false);
@@ -61,11 +63,12 @@ export const Notes = props => {
     await setAddNote(!addNote);
   };
 
-  const handleViewNote = async (title, description) => {
+  const handleViewNote = async (title, description, index) => {
     await setNote({
       title,
       description
     });
+    await setNoteIndex(index);
     await setViewNote(!viewNote);
   };
 
@@ -105,7 +108,7 @@ export const Notes = props => {
                       </IconButton>
                       <CardContent
                         onClick={() =>
-                          handleViewNote(note.title, note.description)
+                          handleViewNote(note.title, note.description, index)
                         }
                       >
                         <Typography>{note.title}</Typography>
@@ -129,9 +132,10 @@ export const Notes = props => {
         />
       ) : null}
       {viewNote ? (
-        <CreateNote
+        <UpdateNote
           defalutValue={activeIndex}
           handleNotes={handleViewNote}
+          noteIndex={noteIndex}
           open={true}
           user={props.user}
           note={note}

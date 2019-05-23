@@ -18,7 +18,7 @@ export const Transition = props => {
   return <Slide direction='up' {...props} />;
 };
 
-export const CreateNote = props => {
+export const UpdateNote = props => {
   const [open, setOpen] = useState(true);
   const [title, setTitle] = useState('');
   const [selectCategory, setSelectCategory] = useState(
@@ -50,12 +50,10 @@ export const CreateNote = props => {
   useEffect(() => {
     setOpen(props.open);
     onListener();
-
     if (props.note) {
       setTitle(props.note.title);
       setDescription(props.note.description);
     }
-
     return function cleanup() {
       unsubscribe();
     };
@@ -72,13 +70,11 @@ export const CreateNote = props => {
     setTitle(event.target.value);
   };
 
-  const createNote = async () => {
-    await setData(
-      data.categories[activeIndex].Notes.push({
-        title: title,
-        description: description
-      })
-    );
+  const saveNote = async () => {
+    data.categories[activeIndex].Notes[props.noteIndex].title = title;
+    data.categories[activeIndex].Notes[
+      props.noteIndex
+    ].description = description;
     await docRef.update({
       categories: data.categories
     });
@@ -97,7 +93,7 @@ export const CreateNote = props => {
       TransitionComponent={Transition}
       aria-labelledby='form-dialog-title'
     >
-      <DialogNav title={'Create Note'} handleClose={handleClose} />
+      <DialogNav title={props.note.title} handleClose={handleClose} />
       <div style={{ marginBottom: 35 }} />
       <DialogContent>
         <InputBase
@@ -151,7 +147,7 @@ export const CreateNote = props => {
         </FormControl>
         <Button
           disabled={selectCategory === '' || title === '' || description === ''}
-          onClick={createNote}
+          onClick={saveNote}
           variant='outlined'
           color='primary'
         >
