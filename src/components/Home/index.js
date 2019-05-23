@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import db from '../../firebaseConfig';
-import { Card, CardContent, Typography, Badge, Slide } from '@material-ui/core';
+import { Card, CardContent, Typography, Slide, Chip } from '@material-ui/core';
 import { Notes } from '../Notes';
 import { toast } from 'react-toastify';
 import help from '../../Common/help.json';
@@ -9,6 +9,7 @@ export const Home = props => {
   const [categoryList, setCategoryList] = useState([]);
   const [data, setData] = useState('');
   const [activeIndex, setActiveIndex] = useState('');
+  const [showNote, setShowNote] = useState(false);
   const user = props.user;
   const docRef = db.collection('users').doc(user.uid);
 
@@ -19,7 +20,9 @@ export const Home = props => {
     });
   };
 
-  const childRef = useRef();
+  const handleNoteClose = () => {
+    setShowNote(false);
+  };
 
   const onListener = () => {
     docRef.onSnapshot(doc => {
@@ -34,7 +37,7 @@ export const Home = props => {
   const passingData = async (card, index) => {
     await setData(card);
     await setActiveIndex(index);
-    await childRef.current.activeNotes(index);
+    await setShowNote(true);
   };
 
   useEffect(() => {
@@ -92,26 +95,32 @@ export const Home = props => {
               style={{ margin: 10 }}
             >
               <CardContent>
+                {card.Notes.length > 0 && (
+                  <Chip
+                    style={{ float: 'right' }}
+                    label={`${card.Notes.length} Notes`}
+                    color='primary'
+                  />
+                )}
+
                 <div>
-                  <Badge color='primary' badgeContent={card.Notes.length}>
-                    <Typography
-                      style={{ padding: '0 10px 0 0' }}
-                      align='left'
-                      inline={true}
-                      variant='subheading'
-                    >
-                      {card.title}
-                    </Typography>
-                  </Badge>
+                  <Typography
+                    style={{ padding: '0 10px 0 0' }}
+                    align='left'
+                    inline={true}
+                    variant='subheading'
+                  >
+                    {card.title}
+                  </Typography>
                 </div>
                 <Typography variant='caption'>{card.description}</Typography>
               </CardContent>
             </Card>
           </Slide>
         ))}
-      {data !== '' ? (
+      {showNote ? (
         <Notes
-          ref={childRef}
+          close={handleNoteClose}
           index={activeIndex}
           categoryList={categoryList}
           data={data}

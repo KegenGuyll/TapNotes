@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useImperativeHandle,
-  forwardRef,
-  useEffect
-} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   Slide,
@@ -17,29 +12,25 @@ import {
 } from '@material-ui/core';
 import db from '../../firebaseConfig';
 import { DialogNav } from '../Navigation/DialogNav';
-import { Close } from '@material-ui/icons';
+import { Close, Create } from '@material-ui/icons';
 import { CreateNote } from './CreateNote';
-import { toast } from 'react-toastify';
+import { UpdateNote } from './UpdateNote';
 
 export const Transition = props => {
   return <Slide direction='up' {...props} />;
 };
 
-export const Notes = forwardRef((props, ref) => {
+export const Notes = props => {
   const [open, setOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState('');
+  const [activeIndex, setActiveIndex] = useState(props.index);
+  const [noteIndex, setNoteIndex] = useState('');
   const [addNote, setAddNote] = useState(false);
   const [data, setData] = useState(null);
+  const [viewNote, setViewNote] = useState(false);
+  const [note, setNote] = useState({});
   const user = props.user;
   const [categoryList, setCategoryList] = useState(props.categoryList);
   const docRef = db.collection('users').doc(user.uid);
-
-  useImperativeHandle(ref, () => ({
-    activeNotes(index) {
-      setActiveIndex(index);
-      setOpen(true);
-    }
-  }));
 
   useEffect(() => {
     onListener();
@@ -48,12 +39,15 @@ export const Notes = forwardRef((props, ref) => {
     };
   }, []);
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleClose = async () => {
+    await setOpen(false);
+    await setTimeout(() => {
+      props.close();
+    }, 250);
   };
 
-  const onListener = () => {
-    docRef.onSnapshot(doc => {
+  const onListener = async () => {
+    await docRef.onSnapshot(doc => {
       setData(doc.data());
     });
   };
@@ -61,21 +55,21 @@ export const Notes = forwardRef((props, ref) => {
   const unsubscribe = docRef.onSnapshot(() => {});
 
   const handleDelete = async () => {
-    //await setData(null);
-    // await props.handleDelete(props.index);
-    //await handleClose();
-    toast.error('This feature is a WIP, Sorry :(', {
-      position: 'bottom-center',
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true
-    });
+    await props.handleDelete(props.index);
+    await handleClose();
   };
 
-  const handleAddNote = async () => {
+  const handleAddNoteClose = async () => {
     await setAddNote(!addNote);
+  };
+
+  const handleViewNote = async (title, description, index) => {
+    await setNote({
+      title,
+      description
+    });
+    await setNoteIndex(index);
+    await setViewNote(!viewNote);
   };
 
   const handleRemoveNote = async index => {
@@ -88,49 +82,65 @@ export const Notes = forwardRef((props, ref) => {
 
   return (
     <Grid container justify='center'>
-      <Dialog fullScreen open={open} TransitionComponent={Transition}>
+      <Dialog fullScreen open={true} TransitionComponent={Transition}>
         <DialogNav
           title={props.data.title}
           notes={true}
-          handleClose={handleClose}
+          handleClose={props.close}
           handleDelete={handleDelete}
-          handleAddNote={handleAddNote}
+          handleAddNote={handleAddNoteClose}
         />
         <DialogContent>
-          {data
-            ? data.categories[activeIndex].Notes.map((note, index) => (
-                <Zoom
-                  key={index}
-                  style={{ transitionDelay: '250ms' }}
-                  in={true}
-                >
-                  <Card style={{ marginTop: '10px' }}>
-                    <IconButton
-                      onClick={() => handleRemoveNote(index)}
-                      style={{ float: 'right' }}
-                    >
-                      <Close />
-                    </IconButton>
-                    <CardContent>
-                      <Typography>{note.title}</Typography>
-                      <Typography variant='caption'>
-                        {note.description}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Zoom>
-              ))
+          {data !== null
+            ? data.categories[activeIndex]
+              ? data.categories[activeIndex].Notes.map((note, index) => (
+                  <Zoom
+                    key={index}
+                    style={{ transitionDelay: '250ms' }}
+                    in={true}
+                  >
+                    <Card style={{ marginTop: '10px' }}>
+                      <IconButton
+                        onClick={() => handleRemoveNote(index)}
+                        style={{ float: 'right' }}
+                      >
+                        <Close />
+                      </IconButton>
+                      <CardContent
+                        onClick={() =>
+                          handleViewNote(note.title, note.description, index)
+                        }
+                      >
+                        <Typography>{note.title}</Typography>
+                        <Typography variant='caption'>
+                          {note.description}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Zoom>
+                ))
+              : null
             : null}
         </DialogContent>
       </Dialog>
       {addNote ? (
         <CreateNote
           defalutValue={activeIndex}
-          handleNotes={handleAddNote}
+          handleNotes={handleAddNoteClose}
           open={true}
           user={props.user}
         />
       ) : null}
+      {viewNote ? (
+        <UpdateNote
+          defalutValue={activeIndex}
+          handleNotes={handleViewNote}
+          noteIndex={noteIndex}
+          open={true}
+          user={props.user}
+          note={note}
+        />
+      ) : null}
     </Grid>
   );
-});
+};

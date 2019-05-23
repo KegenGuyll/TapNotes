@@ -3,14 +3,12 @@ import {
   Dialog,
   Slide,
   Button,
-  TextField,
   InputBase,
   DialogContent,
   DialogActions
 } from '@material-ui/core';
 import db from '../../firebaseConfig';
 import firebase from 'firebase';
-import { toast } from 'react-toastify';
 import { DialogNav } from '../Navigation/DialogNav';
 
 export const Transition = props => {
@@ -18,7 +16,7 @@ export const Transition = props => {
 };
 
 export const CreateCategory = props => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [title, setTitle] = useState('');
   const user = props.user;
   const [description, setDescription] = useState('');
@@ -26,13 +24,15 @@ export const CreateCategory = props => {
 
   useEffect(() => {
     setOpen(props.open);
+
+    return function cleanup() {};
   }, []);
 
   const handleClose = async () => {
-    await setOpen(false);
     await setTimeout(() => {
       props.handleCategory();
     }, 250);
+    await setOpen(false);
   };
 
   const handleTitle = event => {
@@ -44,29 +44,18 @@ export const CreateCategory = props => {
   };
 
   const addCategory = async () => {
-    if (title === '') {
-      await toast.error('A category must contain a proper title', {
-        position: 'bottom-center',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
-      });
-    } else {
-      await docRef.update({
-        categories: firebase.firestore.FieldValue.arrayUnion({
-          title: title,
-          description: description,
-          Notes: [],
-          owner: user.uid,
-          shared: []
-        })
-      });
-      await setOpen(false);
-      await setTitle('');
-      await setDescription('');
-    }
+    await docRef.update({
+      categories: firebase.firestore.FieldValue.arrayUnion({
+        title: title,
+        description: description,
+        Notes: [],
+        owner: user.uid,
+        shared: []
+      })
+    });
+    await setTitle('');
+    await setDescription('');
+    await handleClose();
   };
 
   return (
